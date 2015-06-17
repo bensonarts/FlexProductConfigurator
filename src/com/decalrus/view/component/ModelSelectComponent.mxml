@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx">
+	
+	<s:layout>
+		<s:VerticalLayout/>
+	</s:layout>
+	
+	<fx:Script>
+		<![CDATA[
+			import com.decalrus.event.ModelEvent;
+			import com.decalrus.model.vo.ModelVO;
+			
+			import mx.collections.ArrayCollection;
+			
+			import spark.events.IndexChangeEvent;
+			
+			public static const PRODUCT_SELECTED:String = "productSelected";
+			
+			[Bindable]
+			public var dataProvider:ArrayCollection;
+			
+			protected function productList_changeHandler(event:IndexChangeEvent):void
+			{
+				var vo:ModelVO = this.dataProvider.getItemAt(event.newIndex) as ModelVO;
+				this.productList.selectedIndex = -1;
+				this.productList.selectedItem = null;
+				this.dispatchEvent(new ModelEvent(ModelSelectComponent.PRODUCT_SELECTED, vo));
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	
+	<fx:Metadata>
+		[Event(name="productSelected", type="com.decalrus.event.ModelEvent")]
+	</fx:Metadata>
+	
+	<s:List id="productList" 
+			change="productList_changeHandler(event)"
+			dataProvider="{this.dataProvider}" 
+			itemRenderer="com.decalrus.view.component.renderer.ProductRenderer"
+			borderAlpha="0"
+			borderColor="0xffffff"
+			width="100%" height="600">
+		<s:layout>
+			<s:TileLayout />
+		</s:layout>
+	</s:List>
+</s:Group>

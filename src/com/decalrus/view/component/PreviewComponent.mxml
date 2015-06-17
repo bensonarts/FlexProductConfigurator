@@ -1,0 +1,319 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009"
+		 xmlns:s="library://ns.adobe.com/flex/spark"
+		 xmlns:mx="library://ns.adobe.com/flex/mx"
+		 creationComplete="group1_creationCompleteHandler(event)">
+
+	<fx:Style>
+		@namespace s "library://ns.adobe.com/flex/spark";
+		@namespace mx "library://ns.adobe.com/flex/mx";
+
+		@font-face
+		{
+			src: url("/assets/fonts/style-1.ttf");
+			fontFamily: style1;
+			embed-as-cff: true;
+			unicodeRange:
+				U+0041-U+005A, /* Upper-Case [A..Z] */
+				U+0061-U+007A; /* Lower-Case a-z */
+		}
+		@font-face
+		{
+			src: url("/assets/fonts/style-2.ttf");
+			fontFamily: style2;
+			embed-as-cff: true;
+			unicodeRange:
+				U+0041-U+005A, /* Upper-Case [A..Z] */
+				U+0061-U+007A; /* Lower-Case a-z */
+		}
+		@font-face
+		{
+			src: url("/assets/fonts/style-3.ttf");
+			fontFamily: style3;
+			embed-as-cff: true;
+			unicodeRange:
+				U+0041-U+005A, /* Upper-Case [A..Z] */
+				U+0061-U+007A; /* Lower-Case a-z */
+		}
+		@font-face
+		{
+			src: url("/assets/fonts/style-4.ttf");
+			fontFamily: style4;
+			embed-as-cff: true;
+			unicodeRange:
+				U+0041-U+005A, /* Upper-Case [A..Z] */
+				U+0061-U+007A; /* Lower-Case a-z */
+		}
+		@font-face
+		{
+			src: url("/assets/fonts/style-5.ttf");
+			fontFamily: style5;
+			embed-as-cff: true;
+			unicodeRange:
+				U+0041-U+005A, /* Upper-Case [A..Z] */
+				U+0061-U+007A; /* Lower-Case a-z */
+		}
+		@font-face
+		{
+			src: url("/assets/fonts/style-6.ttf");
+			fontFamily: style6;
+			embed-as-cff: true;
+			unicodeRange:
+				U+0041-U+005A, /* Upper-Case [A..Z] */
+				U+0061-U+007A; /* Lower-Case a-z */
+		}
+		@font-face
+		{
+			src: url("/assets/fonts/style-7.ttf");
+			fontFamily: style7;
+			embed-as-cff: true;
+			unicodeRange:
+				U+0041-U+005A, /* Upper-Case [A..Z] */
+				U+0061-U+007A; /* Lower-Case a-z */
+		}
+		@font-face
+		{
+			src: url("/assets/fonts/style-8.ttf");
+			fontFamily: style8;
+			embed-as-cff: true;
+			unicodeRange:
+				U+0041-U+005A, /* Upper-Case [A..Z] */
+				U+0061-U+007A; /* Lower-Case a-z */
+		}
+		@font-face
+		{
+			src: url("/assets/fonts/style-9.ttf");
+			fontFamily: style9;
+			embed-as-cff: true;
+			unicodeRange:
+				U+0041-U+005A, /* Upper-Case [A..Z] */
+				U+0061-U+007A; /* Lower-Case a-z */
+		}
+		@font-face
+		{
+			src: url("/assets/fonts/style-10.ttf");
+			fontFamily: style10;
+			embed-as-cff: true;
+			unicodeRange:
+				U+0041-U+005A, /* Upper-Case [A..Z] */
+				U+0061-U+007A; /* Lower-Case a-z */
+		}
+	</fx:Style>
+
+	<fx:Script>
+		<![CDATA[
+			import com.decalrus.event.PreviewEvent;
+			import com.decalrus.model.vo.FontVO;
+			import com.decalrus.model.vo.PreviewVO;
+			import com.decalrus.view.component.renderer.PreviewItemRenderer;
+
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.events.FlexEvent;
+			import mx.validators.Validator;
+
+			import spark.events.IndexChangeEvent;
+			import spark.events.TextOperationEvent;
+
+			public static const REMOVE_TEMPLATE:String = "removeTemplate";
+			public static const ADD_CUSTOM_NAME:String = "addCustomName";
+			public static const REMOVE_CUSTOM_NAME:String = "removeCustomName";
+			public static const FONT_SELECTED:String = "fontSelected";
+			public static const FINISH_SELECTED:String = "finishSelected";
+			public static const UPDATE_CUSTOM_NAME:String = "updateCustomName";
+
+			[Bindable]
+			[ArrayElementType("com.decalrus.model.vo.TemplateVO")]
+			public var templates:ArrayCollection;
+
+			[Bindable]
+			[ArrayElementType("com.decalrus.model.vo.PreviewVO")]
+			public var previewCollection:ArrayCollection;
+
+			[Bindable]
+			public var currentPrice:Number;
+
+			[Bindable]
+			public var customFonts:ArrayCollection;
+
+			protected function finishRbg_changeHandler(event:Event):void
+
+			{
+
+				this.dispatchEvent(new Event(PreviewComponent.FINISH_SELECTED));
+
+			}
+
+			protected function customFontList_changeHandler(event:IndexChangeEvent):void
+
+			{
+
+				this.dispatchEvent(new Event(PreviewComponent.FONT_SELECTED));
+
+			}
+
+			protected function chkAddCustomName_clickHandler(event:MouseEvent):void
+
+			{
+
+				if (this.chkAddCustomName.selected)
+				{
+					if (this.customNameInput.text == 'Enter your name')
+					{
+						this.customNameInput.text = '';
+					}
+					this.validateCustomName();
+					this.dispatchEvent(new Event(PreviewComponent.ADD_CUSTOM_NAME));
+				}
+				else
+				{
+					if (this.customNameInput.text == '')
+					{
+						this.customNameInput.text = 'Enter your name';
+					}
+					this.dispatchEvent(new Event(PreviewComponent.REMOVE_CUSTOM_NAME));
+				}
+
+			}
+
+			protected function customNameInput_focusInHandler(event:FocusEvent):void
+
+			{
+
+				if (this.customNameInput.text == 'Enter your name')
+				{
+					this.customNameInput.text = '';
+				}
+
+			}
+
+			protected function customNameInput_focusOutHandler(event:FocusEvent):void
+
+			{
+
+				if (this.customNameInput.text == '')
+				{
+					this.customNameInput.text = 'Enter your name';
+				}
+
+			}
+
+			protected function group1_creationCompleteHandler(event:FlexEvent):void
+
+			{
+
+				this.customFonts = new ArrayCollection();
+				var font1:FontVO = new FontVO('style1', 'Custom name font style 1');
+				var font2:FontVO = new FontVO('style2', 'Custom name font style 2');
+				var font3:FontVO = new FontVO('style3', 'Custom name font style 3');
+				var font4:FontVO = new FontVO('style4', 'Custom name font style 4');
+				var font5:FontVO = new FontVO('style5', 'Custom name font style 5');
+				var font6:FontVO = new FontVO('style6', 'Custom name font style 6');
+				var font7:FontVO = new FontVO('style7', 'Custom name font style 7');
+				var font8:FontVO = new FontVO('style8', 'Custom name font style 8');
+				var font9:FontVO = new FontVO('style9', 'Custom name font style 9');
+				var font10:FontVO = new FontVO('style10', 'Custom name font style 10');
+				this.customFonts.addItem(font1);
+				this.customFonts.addItem(font2);
+				this.customFonts.addItem(font3);
+				this.customFonts.addItem(font4);
+				this.customFonts.addItem(font5);
+				this.customFonts.addItem(font6);
+				this.customFonts.addItem(font7);
+				this.customFonts.addItem(font8);
+				this.customFonts.addItem(font9);
+				this.customFonts.addItem(font10);
+				this.customFontList.selectedIndex = 0;
+
+			}
+
+			protected function previewList_creationCompleteHandler(event:FlexEvent):void
+
+			{
+				trace('PreviewComponent::previewList_creationCompleteHandler');
+
+				this.addEventListener(PreviewItemRenderer.REMOVE, this.onRemoveTemplateArt, false, 0, true);
+
+			}
+
+			protected function validateCustomName():void
+			{
+				var validators:Array = [ this.nameStringValidator ];
+				var errors:Array = Validator.validateAll(validators);
+
+			}
+
+			protected function onRemoveTemplateArt(e:Event):void
+			{
+				e.stopPropagation();
+				if (this.previewCollection.length == 1)
+				{
+					Alert.show("You must have at least one skin. If you wish to start over, click the 'edit skin' button.", "Error");
+					return;
+				}
+				try
+				{
+					var vo:PreviewVO = this.previewCollection.getItemAt(this.previewList.selectedIndex) as PreviewVO;
+					this.previewCollection.removeItemAt(this.previewList.selectedIndex);
+					this.dispatchEvent(new PreviewEvent(PreviewComponent.REMOVE_TEMPLATE, vo));
+				}
+				catch (e:Error)
+				{
+					trace('Error finding PreviewVO instance in previewCollection.');
+				}
+			}
+
+			protected function customNameInput_changeHandler(event:TextOperationEvent):void
+			{
+				this.validateCustomName();
+				this.dispatchEvent(new Event(PreviewComponent.UPDATE_CUSTOM_NAME));
+			}
+
+		]]>
+	</fx:Script>
+
+	<fx:Metadata>
+		[Event(name="addCustomName", type="flash.events.Event")]
+		[Event(name="removeCustomName", type="flash.events.Event")]
+		[Event(name="fontCustomName", type="flash.events.Event")]
+		[Event(name="finishCustomName", type="flash.events.Event")]
+		[Event(name="removeTemplateArt", type="com.decalrus.event.PreviewEvent")]
+	</fx:Metadata>
+
+	<fx:Declarations>
+		<s:RadioButtonGroup id="finishRbg" change="finishRbg_changeHandler(event)" />
+		<mx:StringValidator id="nameStringValidator" required="true" property="text" source="{this.customNameInput}" />
+	</fx:Declarations>
+
+	<s:HGroup width="100%" horizontalAlign="center">
+		<s:List id="previewList" dataProvider="{this.previewCollection}" borderAlpha="0" borderColor="0xffffff"
+				height="550" y="20" creationComplete="previewList_creationCompleteHandler(event)"
+				itemRenderer="com.decalrus.view.component.renderer.PreviewItemRenderer">
+			<s:layout>
+				<s:TileLayout horizontalGap="20" verticalGap="20" horizontalAlign="center" columnAlign="justifyUsingWidth"
+							  paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10"/>
+			</s:layout>
+		</s:List>
+	</s:HGroup>
+
+	<s:HGroup x="10" y="600" width="940" verticalAlign="middle">
+		<s:Label text="Finish" color="0x666666" />
+		<s:RadioButton label="Matte" groupName="finishRbg" value="matte" selected="true" />
+		<s:RadioButton label="Gloss" groupName="finishRbg" value="gloss" selected="false" />
+		<s:Spacer width="100%" />
+		<s:CheckBox id="chkAddCustomName" label="Add on customized name" click="chkAddCustomName_clickHandler(event)" />
+		<s:Image id="btnCustomNameHelp" source="@Embed('/assets/images/btn-help.png')"
+				  toolTip="On any purchased skin, you can customize it by adding your name or a loved one's onto the skin set (20 characters max)."/>
+		<s:TextInput id="customNameInput" text="Enter your name" color="0x666666" enabled="{this.chkAddCustomName.selected}" maxChars="20"
+					 focusIn="customNameInput_focusInHandler(event)" focusOut="customNameInput_focusOutHandler(event)"
+					 change="customNameInput_changeHandler(event)"
+					 toolTip="Enter your name here." />
+		<s:DropDownList id="customFontList"
+						enabled="{this.chkAddCustomName.selected}"
+						change="customFontList_changeHandler(event)"
+						itemRenderer="com.decalrus.view.component.renderer.CustomFontItemRenderer"
+						dataProvider="{this.customFonts}" labelField="text" fontSize="16" width="280">
+		</s:DropDownList>
+	</s:HGroup>
+
+</s:Group>

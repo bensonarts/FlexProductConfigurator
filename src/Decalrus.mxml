@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx" 
+			   minWidth="960" 
+			   minHeight="620" 
+			   xmlns:component="com.decalrus.view.component.*" 
+			   xmlns:decalrus="com.decalrus.*" 
+			   xmlns:view="com.decalrus.view.*">
+	
+	<fx:Declarations>
+		<decalrus:ApplicationContext contextView="{this}" />
+	</fx:Declarations>
+	
+	<fx:Style source="style.css" />
+	
+	<!-- The body is before header as the image manipulator is the top most layer. -->
+	<view:BodyView id="bodyView" width="100%" x="0" y="60" />
+	<view:HeaderView id="headerView" width="100%" x="0" y="0" />
+	
+</s:Application>

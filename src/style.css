@@ -1,0 +1,11 @@
+/* CSS file */
+@namespace s "library://ns.adobe.com/flex/spark";
+@namespace mx "library://ns.adobe.com/flex/mx";
+
+s|VScrollBar {
+	skinClass: ClassReference("com.decalrus.view.component.skin.VScrollBarSkin");
+}
+
+s|HScrollBar {
+	skinClass: ClassReference("com.decalrus.view.component.skin.HScrollBarSkin");
+}

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:ItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+				xmlns:s="library://ns.adobe.com/flex/spark" 
+				xmlns:mx="library://ns.adobe.com/flex/mx" 
+				rollOverColor="0xfc8037"
+				autoDrawBackground="true" width="319">
+	
+	<fx:Script>
+		<![CDATA[
+			protected function img_rollOverHandler(event:MouseEvent):void
+			{
+				this.img.alpha = 0.8;
+			}
+			
+			protected function img_rollOutHandler(event:MouseEvent):void
+			{
+				this.img.alpha = 1;
+			}
+			
+		]]>
+	</fx:Script>
+	
+	
+	<s:Image id="img" source="{data.image}" smooth="true" width="322" height="274" x="0" y="0" scaleMode="stretch"
+			 rollOver="img_rollOverHandler(event)" rollOut="img_rollOutHandler(event)" />
+	
+	<s:Rect x="0" y="244" width="322" height="30">
+		<s:fill>
+			<s:SolidColor color="0xf97c32" alpha="0.5" />
+		</s:fill>
+	</s:Rect>
+	
+	<s:Label text="{data.name}" y="254" color="0xffffff" fontWeight="bold" width="320"
+			 textAlign="center" />
+	
+</s:ItemRenderer>

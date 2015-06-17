@@ -1,0 +1,363 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009"
+		 xmlns:s="library://ns.adobe.com/flex/spark"
+		 xmlns:mx="library://ns.adobe.com/flex/mx"
+		 xmlns:custom="com.decalrus.view.component.custom.*">
+
+	<s:layout>
+		<s:VerticalLayout />
+	</s:layout>
+
+	<fx:Script>
+		<![CDATA[
+			import com.decalrus.event.CategoryEvent;
+			import com.decalrus.event.MakeEvent;
+			import com.decalrus.model.vo.CategoryVO;
+			import com.decalrus.model.vo.MakeVO;
+
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.events.CloseEvent;
+			import mx.events.FlexEvent;
+
+			import spark.components.supportClasses.DropDownController;
+			import spark.events.IndexChangeEvent;
+
+			public static const CATEGORY_SELECT:String = "categorySelect";
+			public static const MAKE_SELECT:String = "makeSelect";
+			public static const BACK_TO_PRODUCTS:String = "backToProducts";
+			public static const UPLOAD_PHOTO:String= "uploadPhoto";
+			public static const SHOW_ARTWORK:String = "showArtwork";
+			public static const SHOW_PREVIEW:String = "showPreview";
+			public static const BACK_TO_MANIPULATOR:String = "backToManipulator";
+			public static const SAVE:String = "save";
+			public static const ADD_TO_CART:String = "addToCart";
+
+			public static const STATE_CATEGORY_SELECTION:String = "CategorySelection";
+			public static const STATE_MAKE_SELECTION:String = "MakeSelection";
+			public static const STATE_MODEL_SELECTION:String = "ModelSelection";
+			public static const STATE_MANIPULATOR:String = "ImageManipulator";
+			public static const STATE_PREVIEW:String = "Preview";
+
+			[Bindable]
+			[ArrayElementType("com.decalrus.model.vo.PreviewVO")]
+			public var previewCollection:ArrayCollection;
+
+			[Bindable]
+			public var currentPrice:Number;
+
+			[Bindable]
+			public var cat1List:ArrayCollection;
+			[Bindable]
+			public var cat2List:ArrayCollection;
+			[Bindable]
+			public var cat3List:ArrayCollection;
+			[Bindable]
+			public var cat4List:ArrayCollection;
+			[Bindable]
+			public var cat5List:ArrayCollection;
+			[Bindable]
+			public var cat6List:ArrayCollection;
+
+			private var _categories:ArrayCollection;
+
+			[Bindable]
+			public function get categories():ArrayCollection
+			{
+				return this._categories;
+			}
+
+
+			public function set categories(value:ArrayCollection):void
+			{
+				this._categories = value;
+				var count:int = 1;
+				for each(var vo:CategoryVO in value)
+				{
+					switch (count)
+					{
+						case 1:
+							this.cat1List = new ArrayCollection(vo.makes);
+							this.test1.prompt = vo.name;
+							break;
+						case 2:
+							this.cat2List = new ArrayCollection(vo.makes);
+							this.test2.prompt = vo.name;
+							break;
+						case 3:
+							this.cat3List = new ArrayCollection(vo.makes);
+							this.test3.prompt = vo.name;
+							break;
+						case 4:
+							this.cat4List = new ArrayCollection(vo.makes);
+							this.test4.prompt = vo.name;
+							break;
+						case 5:
+							this.cat5List = new ArrayCollection(vo.makes);
+							this.test5.prompt = vo.name;
+							break;
+						case 6:
+							this.cat6List = new ArrayCollection(vo.makes);
+							this.test6.prompt = vo.name;
+							break;
+						default:
+							break;
+					}
+					count++;
+				}
+			}
+
+			protected function buttonBar_changeHandler(event:IndexChangeEvent):void
+			{
+				var vo:CategoryVO = this.categories.getItemAt(event.newIndex) as CategoryVO;
+				this.dispatchEvent(new CategoryEvent(HeaderView.CATEGORY_SELECT, vo));
+			}
+
+			protected function dropDownMenu_creationCompleteHandler(event:FlexEvent):void
+			{
+				var ui:DropDownMenu = event.currentTarget as DropDownMenu;
+
+				var controller:DropDownController = ui.controller;
+				controller.rollOverOpenDelay = 0;
+			}
+
+			protected function dropDownMenuChangeHandler(event:IndexChangeEvent):void
+			{
+				var ui:DropDownMenu = event.currentTarget as DropDownMenu;
+				var id:int = int(ui.id.substr(ui.id.length - 1, 1));
+				var vo:MakeVO;
+				switch (id)
+				{
+					case 1:
+						vo = this.cat1List.getItemAt(event.newIndex) as MakeVO;
+						break;
+					case 2:
+						vo = this.cat2List.getItemAt(event.newIndex) as MakeVO;
+						break;
+					case 3:
+						vo = this.cat3List.getItemAt(event.newIndex) as MakeVO;
+						break;
+					case 4:
+						vo = this.cat4List.getItemAt(event.newIndex) as MakeVO;
+						break;
+					case 5:
+						vo = this.cat5List.getItemAt(event.newIndex) as MakeVO;
+						break;
+					case 6:
+						vo = this.cat6List.getItemAt(event.newIndex) as MakeVO;
+						break;
+					default:
+						break;
+				}
+
+				if (vo)
+				{
+					// TODO Fix ID, we need the cat ID, not UI ID. Fine for now until the orders are changed.
+					var categoryVO:CategoryVO = this.categories.getItemAt(id - 1) as CategoryVO;
+					this.dispatchEvent(new MakeEvent(HeaderView.MAKE_SELECT, vo, categoryVO.id));
+				}
+
+				ui.selectedIndex = -1;
+			}
+
+			protected function btnChangeDevice_clickHandler(event:MouseEvent):void
+			{
+				if (this.previewCollection.length > 0)
+				{
+					Alert.show("Do you wish to change your device? If not, click cancel to keep designing.", "Change Device", Alert.YES|Alert.CANCEL, null, this._onChangeDeviceAlertClose);
+				}
+				else
+				{
+					this.dispatchEvent(new Event(HeaderView.BACK_TO_PRODUCTS));
+				}
+			}
+
+			private function _onChangeDeviceAlertClose(e:CloseEvent):void
+			{
+				if (e.detail == Alert.YES)
+				{
+					this.dispatchEvent(new Event(HeaderView.BACK_TO_PRODUCTS));
+				}
+			}
+
+			protected function btnPreview_clickHandler(event:MouseEvent):void
+			{
+				this.currentState = HeaderView.STATE_PREVIEW;
+				this.dispatchEvent(new Event(HeaderView.SHOW_PREVIEW));
+			}
+
+			protected function btnSave_clickHandler(event:MouseEvent):void
+			{
+				this.dispatchEvent(new Event(HeaderView.SAVE));
+			}
+
+			protected function btnChooseArtwork_clickHandler(event:MouseEvent):void
+			{
+				this.dispatchEvent(new Event(HeaderView.SHOW_ARTWORK));
+			}
+
+			protected function btnUploadPhoto_clickHandler(event:MouseEvent):void
+			{
+				this.dispatchEvent(new Event(HeaderView.UPLOAD_PHOTO));
+			}
+
+			protected function btnEditSkin_clickHandler(event:MouseEvent):void
+			{
+				this.currentState = HeaderView.STATE_MANIPULATOR;
+				this.dispatchEvent(new Event(HeaderView.BACK_TO_MANIPULATOR));
+			}
+
+			protected function btnAddToCart_clickHandler(event:MouseEvent):void
+			{
+				Alert.show("Are you sure you wish to add to cart? You will be unable to make changes past this point",
+					"Add to Cart", Alert.YES|Alert.CANCEL, null, this._onAddToCartDialogueClose);
+			}
+
+			private function _onAddToCartDialogueClose(e:CloseEvent):void
+			{
+				if (e.detail == Alert.YES)
+				{
+					this.dispatchEvent(new Event(HeaderView.ADD_TO_CART));
+				}
+			}
+
+		]]>
+	</fx:Script>
+
+	<fx:Declarations>
+		<s:CurrencyFormatter id="currencyFormatter" currencySymbol="$" useCurrencySymbol="true" />
+	</fx:Declarations>
+
+	<fx:Metadata>
+		[Event(name="categorySelect", type="com.decalrus.event.CategoryEvent")]
+		[Event(name="makeSelect", type="com.decalrus.event.MakeEvent")]
+		[Event(name="backToProducts", type="flash.events.Event")]
+		[Event(name="uploadPhoto", type="flash.events.Event")]
+		[Event(name="showPreview", type="flash.events.Event")]
+		[Event(name="backToManipulator", type="flash.events.Event")]
+		[Event(name="save", type="flash.events.Event")]
+		[Event(name="addToCart", type="flash.events.Event")]
+	</fx:Metadata>
+
+	<s:states>
+		<s:State name="CategorySelection" />
+		<s:State name="MakeSelection" />
+		<s:State name="ModelSelection" />
+		<s:State name="ImageManipulator" />
+		<s:State name="Preview" />
+	</s:states>
+
+	<s:HGroup includeIn="CategorySelection" paddingBottom="0" paddingLeft="0" paddingRight="0" paddingTop="0" gap="0" width="100%">
+		<custom:DropDownMenu id="test1" dataProvider="{this.cat1List}" labelField="name"
+							 skinClass="com.decalrus.view.component.skin.DropDownMenuSkin"
+							 itemRenderer="com.decalrus.view.component.renderer.DropDownMenuRenderer"
+							 rollOverColor="0x323232" selectionColor="0x323232" alternatingItemColors="[0x000000, 0x000000]"
+							 borderVisible="false" dropShadowVisible="false" textAlign="center" chromeColor="0x000000"
+							 change="dropDownMenuChangeHandler(event)"
+							 creationComplete="dropDownMenu_creationCompleteHandler(event)" />
+		<custom:DropDownMenu id="test2" dataProvider="{this.cat2List}" labelField="name"
+							 skinClass="com.decalrus.view.component.skin.DropDownMenuSkin"
+							 itemRenderer="com.decalrus.view.component.renderer.DropDownMenuRenderer"
+							 rollOverColor="0x323232" selectionColor="0x323232" alternatingItemColors="[0x000000, 0x000000]"
+							 borderVisible="false" dropShadowVisible="false" textAlign="center" chromeColor="0x000000"
+							 change="dropDownMenuChangeHandler(event)"
+							 creationComplete="dropDownMenu_creationCompleteHandler(event)" />
+		<custom:DropDownMenu id="test3" dataProvider="{this.cat3List}" labelField="name"
+							 skinClass="com.decalrus.view.component.skin.DropDownMenuSkin"
+							 itemRenderer="com.decalrus.view.component.renderer.DropDownMenuRenderer"
+							 rollOverColor="0x323232" selectionColor="0x323232" alternatingItemColors="[0x000000, 0x000000]"
+							 borderVisible="false" dropShadowVisible="false" textAlign="center" chromeColor="0x000000"
+							 change="dropDownMenuChangeHandler(event)"
+							 creationComplete="dropDownMenu_creationCompleteHandler(event)" />
+		<custom:DropDownMenu id="test4" dataProvider="{this.cat4List}" labelField="name"
+							 skinClass="com.decalrus.view.component.skin.DropDownMenuSkin"
+							 itemRenderer="com.decalrus.view.component.renderer.DropDownMenuRenderer"
+							 rollOverColor="0x323232" selectionColor="0x323232" alternatingItemColors="[0x000000, 0x000000]"
+							 borderVisible="false" dropShadowVisible="false" textAlign="center" chromeColor="0x000000"
+							 change="dropDownMenuChangeHandler(event)"
+							 creationComplete="dropDownMenu_creationCompleteHandler(event)" />
+		<custom:DropDownMenu id="test5" dataProvider="{this.cat5List}" labelField="name"
+							 skinClass="com.decalrus.view.component.skin.DropDownMenuSkin"
+							 itemRenderer="com.decalrus.view.component.renderer.DropDownMenuRenderer"
+							 rollOverColor="0x323232" selectionColor="0x323232" alternatingItemColors="[0x000000, 0x000000]"
+							 borderVisible="false" dropShadowVisible="false" textAlign="center" chromeColor="0x000000"
+							 change="dropDownMenuChangeHandler(event)"
+							 creationComplete="dropDownMenu_creationCompleteHandler(event)" />
+		<custom:DropDownMenu id="test6" dataProvider="{this.cat6List}" labelField="name"
+							 skinClass="com.decalrus.view.component.skin.DropDownMenuSkin"
+							 itemRenderer="com.decalrus.view.component.renderer.DropDownMenuRenderer"
+							 rollOverColor="0x323232" selectionColor="0x323232" alternatingItemColors="[0x000000, 0x000000]"
+							 borderVisible="false" dropShadowVisible="false" textAlign="center" chromeColor="0x000000"
+							 change="dropDownMenuChangeHandler(event)"
+							 creationComplete="dropDownMenu_creationCompleteHandler(event)" />
+	</s:HGroup>
+
+	<s:Group includeIn="ImageManipulator" width="100%" height="40">
+		<s:Rect x="0" y="0" width="100%" height="44">
+			<s:fill>
+				<s:LinearGradient rotation="90">
+					<s:GradientEntry color="0x5e5e5e" />
+					<s:GradientEntry color="0x1b1b1b" />
+				</s:LinearGradient>
+			</s:fill>
+		</s:Rect>
+		<s:HGroup x="0" y="0" paddingBottom="0" paddingLeft="0" paddingRight="0" paddingTop="0" gap="0" width="100%">
+			<s:Button id="btnChangeDevice" label="CHANGE DEVICE" click="btnChangeDevice_clickHandler(event)"
+					  icon="@Embed(source='//assets/images/icon-change-product.png')"
+					  cornerRadius="0" color="0xffffff" fontWeight="bold"
+					  skinClass="com.decalrus.view.component.skin.IconButtonSkin" />
+			<s:Button id="btnUploadPhoto" label="UPLOAD PHOTO" click="btnUploadPhoto_clickHandler(event)"
+					  icon="@Embed(source='//assets/images/icon-upload-photo.png')"
+					  cornerRadius="0" color="0xffffff" fontWeight="bold"
+					  skinClass="com.decalrus.view.component.skin.IconButtonSkin" />
+			<s:Button id="btnChooseArtwork" label="CHOOSE ARTWORK" click="btnChooseArtwork_clickHandler(event)"
+					  icon="@Embed(source='//assets/images/icon-choose-artwork.png')"
+					  cornerRadius="0" color="0xffffff" fontWeight="bold"
+					  skinClass="com.decalrus.view.component.skin.IconButtonSkin" />
+			<s:Spacer width="100%" />
+			<!-- Disabling save until SharedObjects are implemented
+			<s:Button id="btnSave" label="SAVE" click="btnSave_clickHandler(event)"
+					  icon="@Embed(source='//assets/images/icon-save.png')"
+					  cornerRadius="0" color="0xffffff" fontWeight="bold"
+					  skinClass="com.decalrus.view.component.skin.IconButtonSkin" />
+			-->
+			<s:Label text="TOTAL: " color="0xffffff" paddingRight="5"
+					 fontWeight="bold" height="44" verticalAlign="middle" />
+			<s:Label text="{this.currencyFormatter.format(this.currentPrice)}" color="0xf97c32" paddingRight="10"
+					 fontWeight="bold" height="44" verticalAlign="middle" />
+			<s:Button id="btnPreview" label="PREVIEW" click="btnPreview_clickHandler(event)"
+					  icon="@Embed(source='//assets/images/icon-preview.png')"
+					  enabled="{this.previewCollection.length > 0}"
+					  cornerRadius="0" color="0xffffff" fontWeight="bold"
+					  skinClass="com.decalrus.view.component.skin.IconButtonSkin" />
+		</s:HGroup>
+	</s:Group>
+
+	<s:Group includeIn="Preview" width="100%" height="40">
+		<s:Rect x="0" y="0" width="100%" height="44">
+			<s:fill>
+				<s:LinearGradient rotation="90">
+					<s:GradientEntry color="0x5e5e5e" />
+					<s:GradientEntry color="0x1b1b1b" />
+				</s:LinearGradient>
+			</s:fill>
+		</s:Rect>
+		<s:HGroup x="0" y="0" paddingBottom="0" paddingLeft="0" paddingRight="0" paddingTop="0" gap="0" width="100%">
+			<s:Button id="btnEditSkin" label="EDIT SKIN" click="btnEditSkin_clickHandler(event)"
+					  icon="@Embed(source='//assets/images/icon-change-product.png')"
+					  cornerRadius="0" color="0xffffff" fontWeight="bold"
+					  skinClass="com.decalrus.view.component.skin.IconButtonSkin" />
+			<s:Spacer width="100%" />
+			<s:Label text="TOTAL: " color="0xffffff" paddingRight="5"
+					 fontWeight="bold" height="44" verticalAlign="middle" />
+			<s:Label text="{this.currencyFormatter.format(this.currentPrice)}" color="0xf97c32" paddingRight="10"
+					 fontWeight="bold" height="44" verticalAlign="middle" />
+			<s:Button id="btnAddToCart" label="ADD TO CART" click="btnAddToCart_clickHandler(event)"
+					  enabled="{this.previewCollection.length > 0}"
+					  icon="@Embed(source='//assets/images/icon-preview.png')"
+					  cornerRadius="0" color="0xffffff" fontWeight="bold"
+					  skinClass="com.decalrus.view.component.skin.IconButtonSkin" />
+		</s:HGroup>
+	</s:Group>
+
+</s:Group>

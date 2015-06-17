@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx">
+	
+	<fx:Script>
+		<![CDATA[
+			import com.decalrus.event.CategoryEvent;
+			import com.decalrus.model.vo.CategoryVO;
+			
+			import mx.collections.ArrayCollection;
+			
+			import org.osmf.events.TimeEvent;
+			
+			import spark.events.IndexChangeEvent;
+			
+			public static const TYPE_SELECT:String = "typeSelect";
+			public static const STATE_VIDEO:String = "Video";
+			public static const STATE_CATEGORIES:String = "Categories";
+			
+			[Bindable]
+			public var dataProvider:ArrayCollection;
+			
+			protected function categoryList_changeHandler(event:IndexChangeEvent):void
+
+			{
+
+				var vo:CategoryVO = this.dataProvider.getItemAt(event.newIndex) as CategoryVO;
+				this.dispatchEvent(new CategoryEvent(IntroComponent.TYPE_SELECT, vo));
+				this.categoryList.selectedIndex = -1;
+
+			}
+			
+			protected function btnCloseVideo_clickHandler(event:MouseEvent):void
+
+			{
+				this.videoPlayer.stop();
+
+				this.currentState = IntroComponent.STATE_CATEGORIES;
+			}
+			
+			protected function videoPlayer_completeHandler(event:TimeEvent):void
+
+			{
+
+				this.currentState = IntroComponent.STATE_CATEGORIES;
+			}
+			
+			protected function btnStartVideo_clickHandler(event:MouseEvent):void
+
+			{
+				this.currentState = IntroComponent.STATE_VIDEO;
+				this.videoPlayer.source = "http://custom.decalrus.com/video/customize-intro.mp4";
+
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	
+	<fx:Style>
+		@namespace s "library://ns.adobe.com/flex/spark";
+		@namespace mx "library://ns.adobe.com/flex/mx";
+		
+		.videoBtn
+		{
+			cornerRadius: 0;
+			fontSize: 14;
+			fontWeight: bold;
+		}
+	</fx:Style>
+	
+	<fx:Metadata>
+		[Event(name="typeSelect", type="com.decalrus.event.CategoryEvent")]
+	</fx:Metadata>
+	
+	<s:states>
+		<s:State name="Categories" />
+		<s:State name="Video" />
+	</s:states>
+	
+	<s:layout>
+		<s:VerticalLayout />
+	</s:layout>
+	
+	<s:Button includeIn="Categories" id="btnStartVideo" label="View Video Demonstration" 
+			  click="btnStartVideo_clickHandler(event)" 
+			  icon="@Embed(source='/assets/images/icon-video.png')"
+			  color="0xffffff" chromeColor="0xfc8037" height="27"
+			  styleName="videoBtn" />
+	
+	<s:List id="categoryList" dataProvider="{this.dataProvider}" borderAlpha="0" borderColor="0xffffff" 
+			change="categoryList_changeHandler(event)" width="100%" includeIn="Categories"
+			itemRenderer="com.decalrus.view.component.renderer.CategoryRenderer">
+		<s:layout>
+			<s:TileLayout verticalGap="0" horizontalGap="0" paddingBottom="0" paddingLeft="0" paddingRight="0" paddingTop="0" />
+		</s:layout>
+	</s:List>
+	
+	<s:VGroup includeIn="Video" horizontalAlign="center" width="100%">
+		<s:HGroup width="100%" horizontalAlign="right">
+			<s:Button id="btnCloseVideo" label="Close Video" click="btnCloseVideo_clickHandler(event)" 
+					  color="0xffffff" chromeColor="0xfc8037" height="27"
+					  enabled="{this.videoPlayer.playing}" visible="{this.videoPlayer.playing}" styleName="videoBtn" />
+		</s:HGroup>
+		<s:VideoPlayer id="videoPlayer" autoPlay="true" autoDisplayFirstFrame="false"
+					   autoRewind="false" complete="videoPlayer_completeHandler(event)" />
+	</s:VGroup>
+	
+</s:Group>

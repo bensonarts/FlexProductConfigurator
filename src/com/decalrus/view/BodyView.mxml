@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx"
+		 xmlns:component="com.decalrus.view.component.*"
+		 currentState="TypeSelect">
+	
+	<s:layout>
+		<s:VerticalLayout/>
+	</s:layout>
+	
+	<s:states>
+		<s:State name="TypeSelect" />
+		<s:State name="ProductSelect" />
+		<s:State name="ProductConfirm" />
+		<s:State name="Customize" />
+		<s:State name="Preview" />
+	</s:states>
+	
+	<fx:Script>
+		<![CDATA[
+			import com.decalrus.event.ArtworkEvent;
+			import com.decalrus.event.ObjectEvent;
+			
+			import mx.collections.ArrayCollection;
+			
+			public static const STATE_TYPE_SELECT:String = "TypeSelect";
+			public static const STATE_PRODUCT_SELECT:String = "ProductSelect";
+			public static const STATE_PRODUCT_CONFIRM:String = "ProductConfirm";
+			public static const STATE_CUSTOMIZE:String = "Customize";
+			public static const STATE_PREVIEW:String = "Preview";
+			
+			[Bindable]
+			public var artworkCollection:ArrayCollection;
+			
+			protected function artworkComponent_typeSelectedHandler(event:ObjectEvent):void
+			{
+				this.dispatchEvent(event);
+			}
+			
+			protected function artworkComponent_artworkSelectedHandler(event:ArtworkEvent):void
+			{
+				this.dispatchEvent(event);
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<component:ArtworkComponent id="artworkComponent" dataProvider="{this.artworkCollection}"
+									typeSelected="artworkComponent_typeSelectedHandler(event)" 
+									artworkSelected="artworkComponent_artworkSelectedHandler(event)" />
+	</fx:Declarations>
+	
+	<component:IntroComponent id="introComponent" width="100%" includeIn="TypeSelect" />
+	<component:ModelSelectComponent id="modelSelectComponent" width="100%" includeIn="ProductSelect" />
+	<component:ProductConfirmComponent id="productConfirmComponent" width="100%" includeIn="ProductConfirm" />
+	<component:CustomizeComponent id="customizeComponent" width="100%" includeIn="Customize" />
+	<component:PreviewComponent id="previewComponent" width="100%" includeIn="Preview" />
+</s:Group>

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:ItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+				xmlns:s="library://ns.adobe.com/flex/spark" 
+				xmlns:mx="library://ns.adobe.com/flex/mx" 
+				rollOverColor="0xffffff"
+				autoDrawBackground="false">
+	
+	<fx:Script>
+		<![CDATA[
+			
+			public static const REMOVE:String = "removePreviewItem";
+			
+			protected function btnRemove_rollOverHandler(event:MouseEvent):void
+			{
+				var img:Image = event.currentTarget as Image;
+				img.alpha = 0.8;
+			}
+			
+			protected function btnRemove_rollOutHandler(event:MouseEvent):void
+			{
+				var img:Image = event.currentTarget as Image;
+				img.alpha = 1;
+			}
+			
+			protected function btnRemove_mouseDownHandler(event:MouseEvent):void
+
+			{
+
+				var img:Image = event.currentTarget as Image;
+				img.alpha = 0.5;
+
+			}
+			
+
+			protected function btnRemove_clickHandler(event:MouseEvent):void
+			{
+				this.dispatchEvent(new Event(PreviewItemRenderer.REMOVE, true, true));
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<fx:Metadata>
+		[Event(name="removePreviewItem", type="flash.events.Event")]
+	</fx:Metadata>
+	
+	<s:VGroup>
+		<s:Image source="{data.bitmapData}" smooth="true" />
+		<s:Label text="{data.templateName}" textAlign="center" color="0xfc8037" fontWeight="bold" width="100%" />
+	</s:VGroup>
+	
+	<s:Image id="btnRemove" source="@Embed('/assets/images/btn-delete-preview.png')" 
+			 bottom="0" right="0"
+			 rollOver="btnRemove_rollOverHandler(event)" 
+			 rollOut="btnRemove_rollOutHandler(event)" 
+			 mouseDown="btnRemove_mouseDownHandler(event)"
+			 click="btnRemove_clickHandler(event)" toolTip="Remove artwork" />
+	
+</s:ItemRenderer>

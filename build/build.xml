@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project name="${project.name}" basedir="../">
+	<property file="${basedir}/build/build.properties"/>
+
+	<taskdef resource="flexTasks.tasks" classpath="${FLEX_HOME}/ant/lib/flexTasks.jar"/>
+
+	<echo message="${FLEX_HOME}/ant/lib/flexTasks.jar" />
+
+    <!--COMPILATION-->
+	<target name="build">
+		<echo message="Compiling project: ${project.name}" />
+		<mxmlc
+			optimize="true"
+			file="${project.src}/${project.input}"
+			output="${project.release}/${project.output}"
+			locale="en_US"
+			static-rsls="false"
+			failonerror="true"
+			debug="true">
+
+			<load-config filename="${FLEX_HOME}/frameworks/flex-config.xml"/>
+
+			<compiler.source-path path-element="${FLEX_HOME}/frameworks" />
+			<compiler.library-path dir="${FLEX_HOME}/frameworks" append="true">
+				<include name="libs" />
+				<include name="../bundles/{locale}" />
+			</compiler.library-path>
+			<compiler.library-path dir="${project.libs}" append="true">
+				<include name="*" />
+			</compiler.library-path>
+		</mxmlc>
+		<echo message="Project compiled to: ${project.release}/${project.output}" />
+
+		<copy file="${project.release}/${project.output}" todir="${project.web}" overwrite="true" />
+		<echo message="Release build has been copied successfully." />
+	</target>
+	<!--END COMPILATION-->
+
+	<!--COMPILATION-->
+	<target name="release-build">
+		<echo message="Compiling project: ${project.name}" />
+		<mxmlc
+			optimize="true"
+			file="${project.src}/${project.input}"
+			output="${project.release}/${project.output}"
+			locale="en_US"
+			static-rsls="false"
+			failonerror="true"
+			debug="false">
+
+			<load-config filename="${FLEX_HOME}/frameworks/flex-config.xml"/>
+
+			<compiler.source-path path-element="${FLEX_HOME}/frameworks" />
+			<compiler.library-path dir="${FLEX_HOME}/frameworks" append="true">
+				<include name="libs" />
+				<include name="../bundles/{locale}" />
+			</compiler.library-path>
+			<compiler.library-path dir="${project.libs}" append="true">
+				<include name="*" />
+			</compiler.library-path>
+		</mxmlc>
+		<echo message="Project compiled to: ${project.release}/${project.output}" />
+
+		<copy file="${project.release}/${project.output}" todir="${project.web}" overwrite="true" />
+		<echo message="Release build has been copied successfully." />
+	</target>
+	<!--END COMPILATION-->
+
+
+</project>

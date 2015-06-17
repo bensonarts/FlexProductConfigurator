@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx">
+	
+	<fx:Script>
+		<![CDATA[
+			import com.decalrus.model.vo.ModelVO;
+			
+			import flashx.textLayout.conversion.TextConverter;
+			
+			public static const CONFIRM:String = "confirm";
+			public static const CANCEL:String = "cancel";
+			
+			[Bindable]
+			public var dataProvider:ModelVO;
+			
+			protected function btnConfirm_clickHandler(event:MouseEvent):void
+
+			{
+
+				this.dispatchEvent(new Event(ProductConfirmComponent.CONFIRM));
+
+			}
+			
+			protected function btnCancel_clickHandler(event:MouseEvent):void
+
+			{
+
+				this.dispatchEvent(new Event(ProductConfirmComponent.CANCEL));
+
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	
+	<fx:Metadata>
+		[Event(name="confirm", type="flash.events.Event")]
+		[Event(name="cancel", type="flash.events.Event")]
+	</fx:Metadata>
+	
+	<s:layout>
+		<s:HorizontalLayout paddingLeft="10" paddingRight="10" />
+	</s:layout>
+	
+	<s:VGroup>
+		<s:Image source="@Embed(source='/assets/images/identify.jpg')" />
+		
+		<s:RichText id="instuctions" width="250"
+					textFlow="{TextConverter.importToFlow(this.dataProvider.identifyInstructions, TextConverter.TEXT_FIELD_HTML_FORMAT)}"/>
+		
+		<s:Button id="btnConfirm" label="THIS IS CORRECT"
+				  click="btnConfirm_clickHandler(event)"
+				  chromeColor="0xfc8037" color="0xffffff" cornerRadius="0" fontSize="14" fontWeight="bold" width="230" height="44" />
+		
+		<s:Button id="btnCancel" label="THIS IS NOT MY MODEL"
+				  click="btnCancel_clickHandler(event)"
+				  chromeColor="0xcacaca" color="0x8d8d8d" cornerRadius="0" fontSize="12" fontWeight="bold" width="230" height="44" />
+	</s:VGroup>
+	
+	<s:Image width="650" 
+			 source="{this.dataProvider.identifyImage}" smooth="true" />
+	
+</s:Group>
